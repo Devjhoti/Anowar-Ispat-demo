@@ -4,7 +4,7 @@ import Lenis from 'lenis'
 import Scene from './components/three/Scene'
 import VideoHero from './components/VideoHero'
 import Hero from './components/Hero'
-import { ProductService, BetterTomorrow, Career, MediaEvents, Blog, Footer } from './components/Sections'
+import { ProductService, AboutUs, Career, MediaEvents, Blog, Footer } from './components/Sections'
 import Navbar from './components/Navbar'
 import ContactModal from './components/ContactModal'
 import IntroLoader from './components/IntroLoader'
@@ -70,7 +70,7 @@ function App() {
                 <VideoHero />
                 <Hero />
                 <ProductService />
-                <BetterTomorrow />
+                <AboutUs />
                 <Career />
                 <MediaEvents />
                 <Blog />

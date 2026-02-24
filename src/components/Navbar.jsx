@@ -41,7 +41,7 @@ const Navbar = ({ onOpenContact }) => {
     const navLinks = [
         { name: 'Product & Service', href: '#product-service' },
         { name: 'Better Tomorrow', href: '#better-tomorrow' },
-        { name: 'Career', href: '#career' },
+        { name: 'Why Choose Us?', href: '#why-choose-us' },
         { name: 'Media & Events', href: '#media-events' },
         { name: 'Blog', href: '#blog' }
     ];

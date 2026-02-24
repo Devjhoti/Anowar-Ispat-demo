@@ -1,7 +1,48 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
+
+const slides = [
+    {
+        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771962941/5462676-Uhd_3840_2160_30Fps_zx5w9l.mp4",
+        title: <>SHAPING THE <span className="accent-text">FUTURE</span></>,
+        subtitle: "Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure."
+    },
+    {
+        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971121/13820828_3840_2160_30Fps_yoa2vx.mp4",
+        title: <>FORGED IN <span className="accent-text">FIRE</span></>,
+        subtitle: "A cinematic journey of power, precision, and the steel that builds nations."
+    },
+    {
+        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971106/6997856-Hd_1920_1080_25Fps_rseb5f.mp4",
+        title: <>ENGINEERED FOR <span className="accent-text">ENDURANCE</span></>,
+        subtitle: "Leading the industry with cutting-edge technology and engineering excellence."
+    },
+    {
+        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971087/6997592-Hd_1920_1080_55Fps_cjabzd.mp4",
+        title: <>SUSTAINABLE <span className="accent-text">PROGRESS</span></>,
+        subtitle: "Committed to eco-friendly practices that power a greener tomorrow."
+    },
+    {
+        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771971000/5115941-Uhd_3840_2160_30Fps_eccbw0.mp4",
+        title: <>UNYIELDING <span className="accent-text">POWER</span></>,
+        subtitle: "Delivering the most robust steel solutions for every monumental challenge."
+    },
+    {
+        video: "https://res.cloudinary.com/dxez9kmnn/video/upload/v1771970977/5055608-Uhd_3840_2160_25Fps_jw1b3e.mp4",
+        title: <>EMPOWERING <span className="accent-text">BANGLADESH</span></>,
+        subtitle: "The foundation of progress, elevating lives and advancing our nation's legacy."
+    }
+];
 
 const VideoHero = () => {
     const contentRef = useRef(null);
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     useEffect(() => {
         const handleMouseMove = (e) => {
@@ -37,26 +78,48 @@ const VideoHero = () => {
     }, []);
 
     return (
-        <section className="video-hero">
-            <div className="video-background">
-                <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="background-video"
+        <section className="video-hero" style={{ position: 'relative', overflow: 'hidden' }}>
+            {slides.map((slide, index) => (
+                <div
+                    key={index}
+                    className="video-background"
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        opacity: currentSlide === index ? 1 : 0,
+                        transition: 'opacity 1s ease-in-out',
+                        zIndex: currentSlide === index ? 1 : 0,
+                        pointerEvents: 'none'
+                    }}
                 >
-                    <source src="https://res.cloudinary.com/dxez9kmnn/video/upload/v1771962941/5462676-Uhd_3840_2160_30Fps_zx5w9l.mp4" type="video/mp4" />
-                </video>
-                <div className="video-overlay"></div>
-            </div>
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="background-video"
+                        src={slide.video}
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                    >
+                    </video>
+                    <div className="video-overlay" style={{
+                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'
+                    }}></div>
+                </div>
+            ))}
+
             {/* The 3D container that handles the perspective and rotation */}
             <div
                 ref={contentRef}
                 className="video-hero-content"
                 style={{
                     transition: 'transform 0.1s ease-out', // Smooth out the mouse following
-                    transformStyle: 'preserve-3d' // Ensure children can be popped out in 3D
+                    transformStyle: 'preserve-3d', // Ensure children can be popped out in 3D
+                    zIndex: 10,
+                    position: 'relative'
                 }}
             >
                 <img
@@ -71,18 +134,70 @@ const VideoHero = () => {
                         transition: 'transform 0.3s ease'
                     }}
                 />
-                <h1 className="video-hero-title" style={{ transform: 'translateZ(40px)' }}>
-                    SHAPING THE <span className="accent-text">FUTURE</span>
-                </h1>
-                <p className="video-hero-subtitle" style={{
-                    marginTop: '1.5rem',
-                    maxWidth: '600px',
-                    color: 'var(--subtext)',
-                    fontSize: '1.2rem',
-                    transform: 'translateZ(20px)' // Lowest pop out
-                }}>
-                    Unrelenting strength. Uncompromising quality. The structural backbone of tomorrow's infrastructure.
-                </p>
+                
+                <div style={{ position: 'relative', width: '100%' }}>
+                    {slides.map((slide, index) => (
+                        <div
+                            key={index}
+                            style={{
+                                position: index === 0 ? 'relative' : 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '100%',
+                                opacity: currentSlide === index ? 1 : 0,
+                                transition: 'opacity 0.8s ease-in-out',
+                                pointerEvents: currentSlide === index ? 'auto' : 'none',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center'
+                            }}
+                        >
+                            <h1 className="video-hero-title" style={{ transform: 'translateZ(40px)', textAlign: 'center' }}>
+                                {slide.title}
+                            </h1>
+                            <p className="video-hero-subtitle" style={{
+                                marginTop: '1.5rem',
+                                maxWidth: '600px',
+                                color: 'var(--subtext)',
+                                fontSize: '1.2rem',
+                                transform: 'translateZ(20px)', // Lowest pop out
+                                textAlign: 'center',
+                                marginInline: 'auto'
+                            }}>
+                                {slide.subtitle}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Carousel Indicators */}
+            <div className="carousel-indicators" style={{
+                position: 'absolute',
+                bottom: '3rem',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                display: 'flex',
+                gap: '12px',
+                zIndex: 20
+            }}>
+                {slides.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentSlide(index)}
+                        style={{
+                            width: currentSlide === index ? '32px' : '12px',
+                            height: '12px',
+                            borderRadius: '6px',
+                            backgroundColor: currentSlide === index ? 'var(--accent)' : 'rgba(255, 255, 255, 0.4)',
+                            border: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            padding: 0
+                        }}
+                        aria-label={`Go to slide ${index + 1}`}
+                    />
+                ))}
             </div>
         </section>
     )
