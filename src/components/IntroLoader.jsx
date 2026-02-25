@@ -136,17 +136,17 @@ const IntroScene = ({ onComplete }) => {
         tl.to(blobRef.current.scale, { x: 0.2, y: 0.6, z: 0.2, duration: 0.15, ease: "power2.in" }, t)
         tl.to(blobRef.current.position, { y: 0.0, duration: 0.15, ease: "power2.in" }, t)
 
-        // Jump 3 (Explosion Approach - shoots up)
+        // Jump 3 (Center before Explosion)
         t += 0.15
         tl.to(blobRef.current.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 0.4, ease: "power2.out" }, t)
-        tl.to(blobRef.current.position, { y: 2.5, duration: 0.6, ease: "power2.out" }, t)
-        tl.to(anim, { distort: 1.5, speed: 15.0, duration: 0.6, onUpdate: updateAnim }, t)
+        tl.to(blobRef.current.position, { y: 0, duration: 0.6, ease: "power2.out" }, t)
+        tl.to(anim, { distort: 0.1, speed: 15.0, duration: 0.6, onUpdate: updateAnim }, t)
 
         // BURST: Covering the whole screen
         t += 0.5
         tl.to(blobRef.current.scale, { x: 50, y: 50, z: 50, duration: 0.8, ease: "expo.in" }, t)
         tl.to(blobRef.current.position, { x: 0, y: 0, z: 4.5, duration: 0.8, ease: "expo.in" }, t)
-        tl.to(anim, { distort: 2.5, speed: 20.0, duration: 0.8, onUpdate: updateAnim }, t)
+        tl.to(anim, { distort: 0, speed: 20.0, duration: 0.8, onUpdate: updateAnim }, t)
 
         tl.to(blobRef.current.material, { opacity: 0, duration: 0.2, ease: "power2.out" }, t + 0.65)
         tl.to(sparksMatRef.current, { opacity: 0, duration: 0.2, ease: "power2.out" }, t + 0.65)
@@ -216,7 +216,7 @@ const IntroLoader = ({ onComplete }) => {
             left: 0,
             width: '100vw',
             height: '100vh',
-            backgroundColor: '#ffffff',
+            backgroundColor: '#0B0B0B',
             zIndex: 99999,
             display: 'flex',
             justifyContent: 'center',
