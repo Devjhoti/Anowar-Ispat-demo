@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { Canvas } from "@react-three/fiber";
+import ForgeThread3D from "./three/ForgeThread3D";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -520,12 +522,19 @@ const MilestoneCard = ({ index, title, desc, img, align, isVisible }) => {
       position: 'relative',
       zIndex: 2,
       gap: '4rem',
-      opacity: opacity,
-      transform: `translateY(${isVisible ? 0 : '20px'}) translateX(${translateX})`,
-      filter: filter,
-      transition: 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
     }}>
-      <div style={{ flex: 1, textAlign: isLeft ? 'right' : 'left', display: 'flex', flexDirection: 'column', alignItems: isLeft ? 'flex-end' : 'flex-start' }}>
+      {/* Text Content */}
+      <div style={{ 
+        flex: 1, 
+        textAlign: isLeft ? 'right' : 'left', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: isLeft ? 'flex-end' : 'flex-start',
+        opacity: opacity,
+        transform: `translateX(${isLeft ? '-100px' : '100px'}) translateY(${isVisible ? '0' : '20px'}) translateX(${isVisible ? (isLeft ? '100px' : '-100px') : '0'})`,
+        filter: filter,
+        transition: 'all 1s cubic-bezier(0.19, 1, 0.22, 1)'
+      }}>
         <h3 style={{ fontSize: 'clamp(2rem, 3vw, 2.5rem)', color: 'var(--text-primary, #fff)', marginBottom: '1rem', fontFamily: 'var(--font-heading)' }}>
           {title}
         </h3>
@@ -558,7 +567,15 @@ const MilestoneCard = ({ index, title, desc, img, align, isVisible }) => {
         }} />
       </div>
 
-      <div style={{ flex: 1, display: 'flex', justifyContent: isLeft ? 'flex-start' : 'flex-end' }}>
+      <div style={{ 
+        flex: 1, 
+        display: 'flex', 
+        justifyContent: isLeft ? 'flex-start' : 'flex-end',
+        opacity: opacity,
+        transform: `translateX(${isLeft ? '100px' : '-100px'}) translateY(${isVisible ? '0' : '20px'}) translateX(${isVisible ? (isLeft ? '-100px' : '100px') : '0'})`,
+        filter: filter,
+        transition: 'all 1s cubic-bezier(0.19, 1, 0.22, 1) 0.1s' // Slight delay for image
+      }}>
         <div style={{
           position: 'relative',
           width: '100%',
@@ -620,34 +637,26 @@ export const WhyChooseUs = () => {
 
       // Calculate progress of the center thread relative to viewport
       const startReveal = viewportHeight * 0.8;
-      const endReveal = -rect.height + viewportHeight * 0.2;
-
+      
       let progress = 0;
       if (rect.top <= startReveal) {
         progress = Math.min(100, Math.max(0, ((startReveal - rect.top) / (rect.height)) * 100));
       }
       setScrollProgress(progress);
+
+      // Trigger visibility based on thread progress
+      const newVisible = [];
+      if (progress > 20) newVisible.push(0);
+      if (progress > 50) newVisible.push(1);
+      if (progress > 80) newVisible.push(2);
+      setVisibleMilestones(newVisible);
     };
 
     window.addEventListener('scroll', handleScroll);
     handleScroll();
 
-    // Intersection Observer for cards
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const index = parseInt(entry.target.getAttribute('data-index'), 10);
-          setVisibleMilestones(prev => prev.includes(index) ? prev : [...prev, index]);
-        }
-      });
-    }, { threshold: 0.3, rootMargin: '0px 0px -100px 0px' });
-
-    const cards = document.querySelectorAll('.milestone-card');
-    cards.forEach(card => observer.observe(card));
-
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      observer.disconnect();
     };
   }, []);
 
@@ -662,7 +671,7 @@ export const WhyChooseUs = () => {
       position: 'relative',
       zIndex: 10,
       padding: '8rem 5%',
-      overflow: 'hidden'
+      // REMOVED overflow: 'hidden' to allow sparks and global layouts.
     }}>
       {/* Ambient background glow */}
       <div style={{
@@ -685,35 +694,16 @@ export const WhyChooseUs = () => {
         bottom: '10rem',
         left: '50%',
         transform: 'translateX(-50%)',
-        width: '2px',
-        background: 'rgba(255,255,255,0.05)',
-        zIndex: 3
+        width: '600px', // wide width for rendering massive sparks without cutoff
+        zIndex: 3,
+        pointerEvents: 'none'
       }}>
-        {/* Active Thread */}
-        <div style={{
-          position: 'absolute',
-          top: 0,
-          left: '-1px', // center the active thread over the path
-          width: '4px',
-          height: `${scrollProgress}%`,
-          background: 'var(--accent)',
-          boxShadow: '0 0 20px var(--accent), 0 0 40px var(--accent)',
-          transition: 'height 0.1s ease-out'
-        }} />
-        {/* Glow leading edge */}
-        <div style={{
-          position: 'absolute',
-          top: `${scrollProgress}%`,
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '12px',
-          height: '12px',
-          borderRadius: '50%',
-          background: '#fff',
-          boxShadow: '0 0 30px 10px var(--accent)',
-          opacity: scrollProgress > 0 && scrollProgress < 100 ? 1 : 0,
-          transition: 'opacity 0.3s ease'
-        }} />
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 45 }}
+          style={{ width: '100%', height: '100%', overflow: 'visible' }}
+        >
+          <ForgeThread3D scrollProgress={scrollProgress} />
+        </Canvas>
       </div>
 
       <div style={{ textAlign: 'center', marginBottom: '8rem', position: 'relative', zIndex: 10 }}>
